@@ -1,6 +1,6 @@
 # Unclock
 
-GPU and CPU power management for Windows — switch between performance and
+GPU and CPU power management for Windows - switch between performance and
 power-saving profiles with one click. Lives in the system tray, stays out of the
 way.
 
