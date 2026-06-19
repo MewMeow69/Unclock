@@ -1,0 +1,190 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Color x:Key="BgDark">#FF000000</Color>
+  <Color x:Key="BgCard">#E8000000</Color>
+  <Color x:Key="BgCardHover">#F0000000</Color>
+  <Color x:Key="AccentColor">#FF76B900</Color>
+  <Color x:Key="AccentAmdColor">#FFED1C24</Color>
+  <Color x:Key="AccentIntelColor">#FF00c2ff</Color>
+  <SolidColorBrush x:Key="Accent" Color="#FF76B900" />
+  <SolidColorBrush x:Key="AccentDim" Color="#4076B900" />
+  <SolidColorBrush x:Key="AccentDimHover" Color="#6076B900" />
+  <SolidColorBrush x:Key="AccentDimPressed" Color="#8076B900" />
+  <SolidColorBrush x:Key="AccentGlow" Color="#9076B900" />
+  <SolidColorBrush x:Key="BorderDim" Color="#2076B900" />
+  <SolidColorBrush x:Key="BorderHover" Color="#B076B900" />
+  <SolidColorBrush x:Key="BrushBgDark" Color="#FF000000" />
+  <SolidColorBrush x:Key="BrushAccent" Color="#FF76B900" />
+  <SolidColorBrush x:Key="BrushTextPrimary" Color="#FFE6EDF3" />
+  <SolidColorBrush x:Key="BrushTextSecondary" Color="#8899AABB" />
+
+  <SolidColorBrush x:Key="AccentAmd" Color="#FFED1C24" />
+  <SolidColorBrush x:Key="AccentAmdDim" Color="#40ED1C24" />
+  <SolidColorBrush x:Key="AccentAmdDimHover" Color="#60ED1C24" />
+  <SolidColorBrush x:Key="AccentAmdDimPressed" Color="#80ED1C24" />
+  <SolidColorBrush x:Key="BorderAmdDim" Color="#20ED1C24" />
+  <SolidColorBrush x:Key="BorderAmdHover" Color="#B0ED1C24" />
+  <SolidColorBrush x:Key="BrushAccentAmd" Color="#FFED1C24" />
+  <SolidColorBrush x:Key="AccentGlowAmd" Color="#90ED1C24" />
+
+  <SolidColorBrush x:Key="AccentIntel" Color="#FF00c2ff" />
+  <SolidColorBrush x:Key="AccentIntelDim" Color="#4000c2ff" />
+  <SolidColorBrush x:Key="AccentIntelDimHover" Color="#6000c2ff" />
+  <SolidColorBrush x:Key="AccentIntelDimPressed" Color="#8000c2ff" />
+  <SolidColorBrush x:Key="BorderIntelDim" Color="#2000c2ff" />
+  <SolidColorBrush x:Key="BorderIntelHover" Color="#B000c2ff" />
+  <SolidColorBrush x:Key="BrushAccentIntel" Color="#FF00c2ff" />
+  <SolidColorBrush x:Key="AccentGlowIntel" Color="#9000c2ff" />
+
+  <Style x:Key="GlassButton" TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource AccentDim}" />
+    <Setter Property="Foreground" Value="{DynamicResource Accent}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderDim}" />
+    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Height" Value="46" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="Margin" Value="0,0,0,8" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="border"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="10">
+            <Border x:Name="sheen" CornerRadius="10" Background="Transparent">
+              <ContentPresenter HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="{TemplateBinding Padding}" />
+            </Border>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentDimHover}" />
+              <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource BorderHover}" />
+              <Setter TargetName="sheen" Property="Background">
+                <Setter.Value>
+                  <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.15">
+                    <GradientStop Offset="0" Color="#FFFFFF" />
+                    <GradientStop Offset="0.5" Color="Transparent" />
+                    <GradientStop Offset="1" Color="#FFFFFF" />
+                  </LinearGradientBrush>
+                </Setter.Value>
+              </Setter>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="border" Property="Background" Value="{DynamicResource AccentDimPressed}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="border" Property="Background" Value="#15000000" />
+              <Setter TargetName="border" Property="BorderBrush" Value="#15000000" />
+              <Setter Property="Foreground" Value="#4499AABB" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="TitleButton" TargetType="Button">
+    <Setter Property="Width" Value="36" />
+    <Setter Property="Height" Value="28" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="#8899AABB" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="bg" Background="{TemplateBinding Background}"
+                  CornerRadius="6" Padding="0">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bg" Property="Background" Value="#30FFFFFF" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource TitleButton}">
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="#C0FF3333" />
+        <Setter Property="Foreground" Value="White" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="PowerToggleButton" TargetType="Button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextSecondary}" />
+    <Setter Property="Padding" Value="4,4" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Height" Value="55" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="bg" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="6" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bg" Property="Background" Value="#15FFFFFF" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="DotIndicator" TargetType="Ellipse">
+    <Setter Property="Width" Value="8" />
+    <Setter Property="Height" Value="8" />
+    <Setter Property="Fill" Value="{DynamicResource BrushAccent}" />
+    <Setter Property="Margin" Value="0,0,6,0" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style x:Key="ThemeToggle" TargetType="Button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextSecondary}" />
+    <Setter Property="Padding" Value="6,5" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="bg" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="6">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Margin="{TemplateBinding Padding}" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bg" Property="Background" Value="#15FFFFFF" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+</ResourceDictionary>

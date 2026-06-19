@@ -1,0 +1,12 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.DotSettings
+
+## Installer output
+installer/Output/
+
+## ADLX SDK (download separately)
+ADLX/

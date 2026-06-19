@@ -1,0 +1,343 @@
+﻿<Window x:Class="Unclock.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+         Title="Unclock"
+         WindowStyle="None"
+         AllowsTransparency="False"
+         Background="#FF000000"
+         FontFamily="pack://application:,,,/Fonts/#Lato"
+         WindowStartupLocation="CenterScreen"
+         Width="475" Height="730"
+         ResizeMode="CanResizeWithGrip">
+  <WindowChrome.WindowChrome>
+    <WindowChrome CaptionHeight="0" CornerRadius="12"
+                  GlassFrameThickness="0" ResizeBorderThickness="6"
+                  UseAeroCaptionButtons="False" />
+  </WindowChrome.WindowChrome>
+
+  <Grid>
+    <Border CornerRadius="12" Background="#FF000000"
+            BorderThickness="1" BorderBrush="{DynamicResource BorderDim}">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="48" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Title Bar -->
+        <Grid Grid.Row="0" Background="#FF000000" MouseLeftButtonDown="TitleBar_OnMouseDown">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+
+          <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="Unclock"
+                     FontSize="14" FontWeight="SemiBold"
+                     Foreground="#889bbbd3" VerticalAlignment="Center"
+                     HorizontalAlignment="Center" />
+
+          <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,0,8,0">
+            <Button x:Name="MinBtn" Style="{StaticResource TitleButton}"
+                    Click="MinBtn_Click" Content="─" FontSize="16" />
+            <Button x:Name="CloseBtn" Style="{StaticResource CloseButton}"
+                    Click="CloseBtn_Click" Content="✕" FontSize="13" />
+          </StackPanel>
+        </Grid>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" Padding="19,12,19,19"
+                      VerticalScrollBarVisibility="Hidden">
+          <StackPanel>
+
+            <!-- Hardware Info Card -->
+            <Border Background="#FF000000" CornerRadius="10"
+                    BorderThickness="1" Padding="17"
+                    Margin="0,0,0,12"
+                    BorderBrush="{DynamicResource BorderDim}">
+              <Border.Effect>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="14"
+                                  Color="{DynamicResource AccentColor}" Opacity="0.15" />
+              </Border.Effect>
+              <StackPanel>
+                <!-- GPU label row -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                  <Border Width="34" Height="34" CornerRadius="8"
+                           Background="#FF000000" BorderBrush="{DynamicResource BrushAccent}"
+                          BorderThickness="1" Margin="0,0,12,0">
+                    <Viewbox Width="22" Height="22">
+                      <Canvas Width="24" Height="24">
+                        <Ellipse x:Name="BrandOuter" Width="20" Height="20"
+                                 Stroke="{DynamicResource BrushAccent}" StrokeThickness="2.5"
+                                 Canvas.Left="2" Canvas.Top="2" />
+                        <Ellipse x:Name="BrandInner" Width="12" Height="12"
+                                 Stroke="{DynamicResource BrushAccent}" StrokeThickness="2"
+                                 Canvas.Left="6" Canvas.Top="6" />
+                        <Ellipse x:Name="BrandDot" Width="3" Height="3"
+                                 Fill="{DynamicResource BrushAccent}"
+                                 Canvas.Left="10.5" Canvas.Top="10.5" />
+                      </Canvas>
+                    </Viewbox>
+                  </Border>
+                  <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="GPU:" FontSize="13" Foreground="#666e7a" Margin="0,0,5,0" />
+                      <Ellipse Width="7" Height="7" Fill="{DynamicResource BrushAccent}"
+                               VerticalAlignment="Center" Margin="0,0,5,0" />
+                      <TextBlock x:Name="GpuLabel" Text="detecting..." FontSize="13"
+                                 FontWeight="SemiBold" Foreground="#E6EDF3"
+                                 MaxWidth="260" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                      <TextBlock Text="CPU:" FontSize="12" Foreground="#666e7a" Margin="0,0,5,0" />
+                      <TextBlock Text="✓" FontSize="12" Foreground="{DynamicResource BrushAccent}" Margin="0,0,5,0" />
+                      <TextBlock Text="powercfg available" FontSize="12"
+                                 Foreground="#E6EDF3" />
+                    </StackPanel>
+                  </StackPanel>
+                </StackPanel>
+
+                <!-- Stats -->
+                <Border Height="1" Background="#1c1c24" Margin="0,10,0,8" />
+                <TextBlock x:Name="CpuStatsText" Text="CPU: sampling..."
+                           FontFamily="Consolas" FontSize="13" Foreground="#FFFFFF" />
+                <TextBlock x:Name="GpuStatsText" Text="GPU: --"
+                           FontFamily="Consolas" FontSize="13" Foreground="#FFFFFF" Margin="0,2,0,0" />
+
+                <!-- Power row — 3 columns -->
+                <Border Height="1" Background="#1c1c24" Margin="0,10,0,10" />
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <StackPanel Grid.Column="0" HorizontalAlignment="Left">
+                    <TextBlock Text="Est. PC" FontSize="11" Foreground="#666e7a" />
+                    <TextBlock x:Name="SysPowerTxt" Text="-- W"
+                               FontFamily="Consolas" FontSize="17" FontWeight="Bold"
+                               Foreground="{DynamicResource BrushAccent}" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="CPU Power" FontSize="11" Foreground="#666e7a"
+                               TextAlignment="Center" />
+                    <TextBlock x:Name="CpuPowerTxt" Text="-- W"
+                               FontFamily="Consolas" FontSize="17" FontWeight="Bold"
+                               Foreground="{DynamicResource BrushAccent}"
+                               TextAlignment="Center" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                    <TextBlock Text="GPU Power" FontSize="11" Foreground="#666e7a"
+                               TextAlignment="Right" />
+                    <TextBlock x:Name="GpuPowerTxt" Text="-- W"
+                               FontFamily="Consolas" FontSize="17" FontWeight="Bold"
+                               Foreground="{DynamicResource BrushAccent}"
+                               TextAlignment="Right" />
+                  </StackPanel>
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <!-- GPU Power Mode -->
+            <TextBlock Text="GPU POWER MODE" FontSize="13" FontWeight="SemiBold"
+                       Foreground="#E6EDF3" Margin="0,0,0,8" />
+            <Grid Margin="0,0,0,10">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Button x:Name="GpuPerfBtn" Grid.Column="0" Style="{StaticResource PowerToggleButton}"
+                      Click="GpuPerfBtn_Click">
+                <StackPanel>
+                  <TextBlock Text="Performance" FontSize="12" FontWeight="SemiBold" />
+                  <TextBlock Text="Reset clocks" FontSize="10" Foreground="#666e7a" />
+                </StackPanel>
+              </Button>
+              <Button x:Name="GpuMedBtn" Grid.Column="1" Style="{StaticResource PowerToggleButton}"
+                      Click="GpuMedBtn_Click">
+                <StackPanel>
+                  <TextBlock Text="Medium" FontSize="12" FontWeight="SemiBold" />
+                  <TextBlock Text="50% clocks" FontSize="10" Foreground="#666e7a" />
+                </StackPanel>
+              </Button>
+              <Button x:Name="GpuSaverBtn" Grid.Column="2" Style="{StaticResource PowerToggleButton}"
+                      Click="GpuSaverBtn_Click">
+                <StackPanel>
+                  <TextBlock Text="Power Saver" FontSize="12" FontWeight="SemiBold" />
+                  <TextBlock Text="Min clocks" FontSize="10" Foreground="#666e7a" />
+                </StackPanel>
+              </Button>
+            </Grid>
+
+            <!-- CPU Power Mode -->
+            <TextBlock Text="CPU POWER MODE" FontSize="13" FontWeight="SemiBold"
+                       Foreground="#E6EDF3" Margin="0,0,0,8" />
+            <Grid Margin="0,0,0,10">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Button x:Name="CpuMaxPerfBtn" Grid.Column="0" Style="{StaticResource PowerToggleButton}"
+                      Click="CpuMaxPerfBtn_Click">
+                <StackPanel>
+                  <TextBlock Text="Max Perf" FontSize="12" FontWeight="SemiBold" />
+                  <TextBlock Text="Full" FontSize="10" Foreground="#666e7a" />
+                </StackPanel>
+              </Button>
+              <Button x:Name="CpuHighPerfBtn" Grid.Column="1" Style="{StaticResource PowerToggleButton}"
+                      Click="CpuHighPerfBtn_Click">
+                <StackPanel>
+                  <TextBlock Text="High Perf" FontSize="12" FontWeight="SemiBold" />
+                  <TextBlock Text="100%" FontSize="10" Foreground="#666e7a" />
+                </StackPanel>
+              </Button>
+              <Button x:Name="CpuMidSaveBtn" Grid.Column="2" Style="{StaticResource PowerToggleButton}"
+                      Click="CpuMidSaveBtn_Click">
+                <StackPanel>
+                  <TextBlock Text="Mid Save" FontSize="12" FontWeight="SemiBold" />
+                  <TextBlock Text="70% limit" FontSize="10" Foreground="#666e7a" />
+                </StackPanel>
+              </Button>
+              <Button x:Name="CpuMaxSaveBtn" Grid.Column="3" Style="{StaticResource PowerToggleButton}"
+                      Click="CpuMaxSaveBtn_Click">
+                <StackPanel>
+                  <TextBlock Text="Max Save" FontSize="12" FontWeight="SemiBold" />
+                  <TextBlock Text="50% limit" FontSize="10" Foreground="#666e7a" />
+                </StackPanel>
+              </Button>
+            </Grid>
+
+            <!-- Separator -->
+            <Border Height="1" Background="#1c1c24" Margin="0,0,0,10" />
+
+            <!-- Windows Power Plan -->
+            <TextBlock Text="WINDOWS POWER PLAN" FontSize="13" FontWeight="SemiBold"
+                       Foreground="#E6EDF3" Margin="0,0,0,8" />
+            <Grid Margin="0,0,0,10">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Button x:Name="WinHighBtn" Grid.Column="0" Style="{StaticResource PowerToggleButton}"
+                      Click="WinHighBtn_Click">
+                <TextBlock Text="High Perf" FontSize="12" FontWeight="SemiBold" />
+              </Button>
+              <Button x:Name="WinBalBtn" Grid.Column="1" Style="{StaticResource PowerToggleButton}"
+                      Click="WinBalBtn_Click">
+                <TextBlock Text="Balanced" FontSize="12" FontWeight="SemiBold" />
+              </Button>
+              <Button x:Name="WinSaverBtn" Grid.Column="2" Style="{StaticResource PowerToggleButton}"
+                      Click="WinSaverBtn_Click">
+                <TextBlock Text="Power Saver" FontSize="12" FontWeight="SemiBold" />
+              </Button>
+            </Grid>
+
+            <!-- Reset All -->
+            <Button x:Name="BtnResetAll" Style="{StaticResource PowerToggleButton}"
+                    Height="50" Click="BtnResetAll_Click" Margin="0,0,0,10">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⟳" FontSize="14" Foreground="#8899AABB" Margin="0,0,8,0" />
+                <TextBlock Text="Reset All" FontSize="13" FontWeight="SemiBold"
+                           Foreground="#FFFFFF" />
+              </StackPanel>
+            </Button>
+
+            <!-- Separator -->
+            <Border Height="1" Background="#1c1c24" Margin="0,0,0,10" />
+
+            <!-- Theme -->
+            <TextBlock Text="THEME" FontSize="13" FontWeight="SemiBold"
+                       Foreground="#666e7a" Margin="0,0,0,8" />
+            <Grid Margin="0,0,0,0">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Button x:Name="ThemeNvidia" Grid.Column="0" Style="{StaticResource ThemeToggle}"
+                      Click="ThemeNvidia_Click">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                  <Ellipse Width="7" Height="7" Fill="#76b900" Margin="0,0,6,0" />
+                  <TextBlock Text="NVIDIA" FontWeight="Bold" />
+                </StackPanel>
+              </Button>
+              <Button x:Name="ThemeAmd" Grid.Column="1" Style="{StaticResource ThemeToggle}"
+                      Click="ThemeAmd_Click">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                  <Ellipse Width="8" Height="8" Stroke="#ed1c24" StrokeThickness="1.5"
+                           Margin="0,0,6,0" />
+                  <TextBlock Text="AMD" FontWeight="Bold" />
+                </StackPanel>
+              </Button>
+              <Button x:Name="ThemeIntel" Grid.Column="2" Style="{StaticResource ThemeToggle}"
+                      Click="ThemeIntel_Click">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                  <Ellipse Width="7" Height="7" Fill="#00c2ff" Margin="0,0,6,0" />
+                  <TextBlock Text="Intel" FontWeight="Bold" />
+                </StackPanel>
+              </Button>
+            </Grid>
+
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+
+    <!-- Tray Icon -->
+    <tb:TaskbarIcon x:Name="TrayIcon"
+                    TrayLeftMouseUp="TrayIcon_TrayLeftMouseUp"
+                    ToolTipText="Unclock"
+                    Visibility="Collapsed">
+      <tb:TaskbarIcon.ContextMenu>
+        <ContextMenu Background="#FF000000" Foreground="#E6EDF3"
+                     BorderBrush="#1A1A1A" BorderThickness="1"
+                     HasDropShadow="False">
+          <ContextMenu.Resources>
+            <Style TargetType="ContextMenu">
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="#FF000000" BorderBrush="#1A1A1A"
+                            BorderThickness="1" CornerRadius="4" Padding="2">
+                      <StackPanel IsItemsHost="True" />
+                    </Border>
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+            <Style TargetType="MenuItem">
+              <Setter Property="Background" Value="Transparent" />
+              <Setter Property="Foreground" Value="#E6EDF3" />
+              <Setter Property="FontWeight" Value="SemiBold" />
+              <Setter Property="FontSize" Value="14" />
+              <Setter Property="BorderThickness" Value="0" />
+              <Setter Property="Padding" Value="12,7" />
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Bg" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                      <ContentPresenter ContentSource="Header" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Bg" Property="Background" Value="#20FFFFFF" />
+                      </Trigger>
+                    </ControlTemplate.Triggers>
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </ContextMenu.Resources>
+          <MenuItem Header="Show Window" Click="TrayShow_Click" />
+          <Separator Background="#1c1c24" />
+          <MenuItem Header="Exit" Click="TrayExit_Click" />
+        </ContextMenu>
+      </tb:TaskbarIcon.ContextMenu>
+    </tb:TaskbarIcon>
+  </Grid>
+</Window>
