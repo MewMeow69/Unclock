@@ -4,6 +4,9 @@ GPU and CPU power management for Windows - switch between performance and
 power-saving profiles with one click. Lives in the system tray, stays out of the
 way.
 
+<img width="1400" height="729" alt="Screenshot 2026-06-19 144340" src="https://github.com/user-attachments/assets/859462de-99f2-45f9-b58f-99ebdf8bef5b" />
+
+
 ## Supported Hardware
 
 - **NVIDIA GPUs** - full support: clock control, live stats (usage, clocks,
