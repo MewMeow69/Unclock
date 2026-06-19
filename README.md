@@ -41,4 +41,4 @@ dependencies beyond the two NuGet packages in `PowerSaver.csproj`.
 
 ## License
 
-MIT — see LICENSE file.
+MIT - see LICENSE file.
