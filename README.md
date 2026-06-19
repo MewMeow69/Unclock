@@ -36,9 +36,6 @@ way.
 2. Extract to any folder
 3. Run `Unclock.exe`
 
-The app starts minimized to the system tray. Click the tray icon to open.
-
-
 Fonts (Lato Regular + Bold) are embedded as WPF resources. No external
 dependencies beyond the two NuGet packages in `PowerSaver.csproj`.
 
