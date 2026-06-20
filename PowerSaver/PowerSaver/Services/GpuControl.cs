@@ -14,19 +14,15 @@ internal static class GpuControl
         return Elevated.Run("nvidia-smi --reset-gpu-clocks && nvidia-smi --reset-memory-clocks");
     }
 
-    public static string AmdSave()
-    {
-        return Elevated.Run("amd_bridge.exe --power-save");
-    }
+    public static string AmdSave() => AmdRun("--power-save");
+    public static string AmdMediumSave() => AmdRun("--medium-save");
+    public static string AmdReset() => AmdRun("--reset");
 
-    public static string AmdMediumSave()
+    static string AmdRun(string args)
     {
-        return Elevated.Run("amd_bridge.exe --medium-save");
-    }
-
-    public static string AmdReset()
-    {
-        return Elevated.Run("amd_bridge.exe --reset");
+        if (!System.IO.File.Exists("amd_bridge.exe"))
+            return "amd_bridge.exe not found — build from amd_bridge/ (see README)";
+        return Elevated.Run($"amd_bridge.exe {args}");
     }
 
     public static string NvidiaMediumSave()

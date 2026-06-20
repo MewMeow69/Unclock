@@ -68,6 +68,20 @@ internal static class HardwareDetector
 
     static string? GetAmdGpuName()
     {
+        // WMI: detect AMD/ATI/Radeon GPU — works without amd_bridge.exe
+        try
+        {
+            using var p = Process.Start(new ProcessStartInfo("powershell",
+                "-NoProfile -Command \"Get-CimInstance Win32_VideoController | Where-Object { $_.AdapterCompatibility -like '*AMD*' -or $_.AdapterCompatibility -like '*ATI*' -or $_.Name -like '*Radeon*' -or $_.Name -like '*AMD*' } | Select-Object -First 1 -ExpandProperty Name\"")
+            { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true });
+            if (p == null) return null;
+            var name = p.StandardOutput.ReadToEnd().Trim();
+            p.WaitForExit(5000);
+            if (p.ExitCode == 0 && name != "") return name;
+        }
+        catch { }
+
+        // fallback: try amd_bridge --info for richer naming
         try
         {
             using var p = Process.Start(new ProcessStartInfo("amd_bridge.exe", "--info")
@@ -80,7 +94,7 @@ internal static class HardwareDetector
             p.WaitForExit(3000);
             if (p.ExitCode != 0 || json == "") return null;
             var doc = System.Text.Json.JsonDocument.Parse(json);
-            return doc.RootElement.GetProperty("name").GetString();
+            return doc.RootElement[0].GetProperty("name").GetString();
         }
         catch { return null; }
     }

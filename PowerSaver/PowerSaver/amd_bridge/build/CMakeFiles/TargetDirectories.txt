@@ -1,0 +1,3 @@
+C:/Users/mecra/gpu-reset-tool/PowerSaver/PowerSaver/amd_bridge/build/CMakeFiles/amd_bridge.dir
+C:/Users/mecra/gpu-reset-tool/PowerSaver/PowerSaver/amd_bridge/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/mecra/gpu-reset-tool/PowerSaver/PowerSaver/amd_bridge/build/CMakeFiles/ZERO_CHECK.dir

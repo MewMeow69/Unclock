@@ -1,24 +1,21 @@
 #include <cstdio>
 #include <cstring>
-#include <vector>
 
-#include "ADLX/ADLX.hpp"
-#include "ADLX/ADLXHelper.h"
+#include "ADLXHelper.h"
+#include "IGPUManualGFXTuning.h"
+#include "IGPUTuning.h"
+
+using namespace adlx;
 
 #define CHECK(x) do { auto r = (x); if (ADLX_FAILED(r)) { std::fprintf(stderr, "FAIL: %s\n  error=0x%X\n", #x, r); return 1; } } while(0)
 
-static adlx_bool IsAMD(IADLXGPU* gpu)
-{
-    ADLX_AMD_GPU_TYPE t;
-    gpu->GetAMDGPUVariant(&t);
-    return t != AMD_GPU_UNKNOWN;
-}
+// all GPUs from ADLX are AMD — no vendor check needed
 
 static int CmdInfo()
 {
     ADLXHelper adlx;
     CHECK(adlx.Initialize());
-    IADLXSystem* sys = adlx.GetSystem();
+    IADLXSystem* sys = adlx.GetSystemServices();
     IADLXGPUList* gpus = nullptr;
     sys->GetGPUs(&gpus);
     if (!gpus) { std::puts("[]"); return 0; }
@@ -31,7 +28,7 @@ static int CmdInfo()
         if (i > 0) std::putchar(',');
         const char* name = nullptr;
         gpu->Name(&name);
-        std::printf("{\"name\":\"%s\",\"amd\":%s}", name ? name : "?", IsAMD(gpu) ? "true" : "false");
+        std::printf("{\"name\":\"%s\",\"amd\":true}", name ? name : "?");
         gpu->Release();
     }
     std::puts("]");
@@ -44,28 +41,24 @@ static int CmdPowerSave()
 {
     ADLXHelper adlx;
     CHECK(adlx.Initialize());
-    IADLXSystem* sys = adlx.GetSystem();
+    IADLXSystem* sys = adlx.GetSystemServices();
 
-    // get the first AMD GPU
     IADLXGPU* gpu = nullptr;
     {
         IADLXGPUList* gpus = nullptr;
         sys->GetGPUs(&gpus);
-        for (adlx_uint i = 0, n = gpus->Size(); i < n; ++i)
+        if (gpus->Size() > 0)
         {
-            IADLXGPU* g = nullptr;
-            gpus->At(i, &g);
-            if (g && IsAMD(g)) { gpu = g; gpu->AddRef(); g->Release(); break; }
-            if (g) g->Release();
+            gpus->At(0, &gpu);
+            if (gpu) gpu->Acquire();
         }
         gpus->Release();
     }
-    if (!gpu) { std::fputs("FAIL: no AMD GPU found\n", stderr); return 1; }
+    if (!gpu) { std::fputs("FAIL: no GPU found\n", stderr); return 1; }
 
     IADLXGPUTuningServices* tuning = nullptr;
     CHECK(sys->GetGPUTuningServices(&tuning));
 
-    // manual tuning v2 — most widely supported on modern AMD GPUs
     IADLXManualGraphicsTuning2* mt2 = nullptr;
     CHECK(tuning->GetManualGraphicsTuning(gpu, &mt2));
 
@@ -76,21 +69,15 @@ static int CmdPowerSave()
     mt2->GetVRAMMinFrequency(&vramMin);
     mt2->GetVRAMMaxFrequency(&vramMax);
 
-    // clamp to hardware minimum
-    adlx_int fmin = freqMin;  // hardware floor (already the min)
-    adlx_int vmin = vramMin;
+    CHECK(mt2->SetGPUMinFrequency(freqMin));
+    CHECK(mt2->SetGPUMaxFrequency(freqMin));
+    CHECK(mt2->SetVRAMFrequency(vramMin));
 
-    CHECK(mt2->SetGPUMinFrequency(fmin));
-    CHECK(mt2->SetGPUMaxFrequency(fmin));
-    CHECK(mt2->SetVRAMFrequency(vmin));
-
-    // query the valid power range and use the minimum
     adlx_int powerMin = 0, powerMax = 100;
     if (ADLX_SUCCEEDED(mt2->GetPowerLimitRange(&powerMin, &powerMax)))
         CHECK(mt2->SetPowerLimit(powerMin));
-    // else: power limit is optional — freq lock already saves power
 
-    std::printf("OK: GPU min=%d VRAM min=%d power=%d%%\n", (int)fmin, (int)vmin, (int)powerMin);
+    std::printf("OK: GPU min=%d VRAM min=%d power=%d%%\n", (int)freqMin, (int)vramMin, (int)powerMin);
 
     mt2->Release();
     tuning->Release();
@@ -103,22 +90,20 @@ static int CmdMediumSave()
 {
     ADLXHelper adlx;
     CHECK(adlx.Initialize());
-    IADLXSystem* sys = adlx.GetSystem();
+    IADLXSystem* sys = adlx.GetSystemServices();
 
     IADLXGPU* gpu = nullptr;
     {
         IADLXGPUList* gpus = nullptr;
         sys->GetGPUs(&gpus);
-        for (adlx_uint i = 0, n = gpus->Size(); i < n; ++i)
+        if (gpus->Size() > 0)
         {
-            IADLXGPU* g = nullptr;
-            gpus->At(i, &g);
-            if (g && IsAMD(g)) { gpu = g; gpu->AddRef(); g->Release(); break; }
-            if (g) g->Release();
+            gpus->At(0, &gpu);
+            if (gpu) gpu->Acquire();
         }
         gpus->Release();
     }
-    if (!gpu) { std::fputs("FAIL: no AMD GPU found\n", stderr); return 1; }
+    if (!gpu) { std::fputs("FAIL: no GPU found\n", stderr); return 1; }
 
     IADLXGPUTuningServices* tuning = nullptr;
     CHECK(sys->GetGPUTuningServices(&tuning));
@@ -133,7 +118,6 @@ static int CmdMediumSave()
     mt2->GetVRAMMinFrequency(&vramMin);
     mt2->GetVRAMMaxFrequency(&vramMax);
 
-    // midpoint between min and max
     adlx_int fMid = freqMin + (freqMax - freqMin) / 2;
     adlx_int vMid = vramMin + (vramMax - vramMin) / 2;
 
@@ -158,34 +142,28 @@ static int CmdReset()
 {
     ADLXHelper adlx;
     CHECK(adlx.Initialize());
-    IADLXSystem* sys = adlx.GetSystem();
+    IADLXSystem* sys = adlx.GetSystemServices();
 
     IADLXGPU* gpu = nullptr;
     {
         IADLXGPUList* gpus = nullptr;
         sys->GetGPUs(&gpus);
-        for (adlx_uint i = 0, n = gpus->Size(); i < n; ++i)
+        if (gpus->Size() > 0)
         {
-            IADLXGPU* g = nullptr;
-            gpus->At(i, &g);
-            if (g && IsAMD(g)) { gpu = g; gpu->AddRef(); g->Release(); break; }
-            if (g) g->Release();
+            gpus->At(0, &gpu);
+            if (gpu) gpu->Acquire();
         }
         gpus->Release();
     }
-    if (!gpu) { std::fputs("FAIL: no AMD GPU found\n", stderr); return 1; }
+    if (!gpu) { std::fputs("FAIL: no GPU found\n", stderr); return 1; }
 
     IADLXGPUTuningServices* tuning = nullptr;
     CHECK(sys->GetGPUTuningServices(&tuning));
 
-    IADLXManualGraphicsTuning2* mt2 = nullptr;
-    CHECK(tuning->GetManualGraphicsTuning(gpu, &mt2));
-
-    CHECK(mt2->ResetToFactory());
+    CHECK(tuning->ResetToFactory(gpu));
 
     std::puts("OK: GPU reset to factory defaults");
 
-    mt2->Release();
     tuning->Release();
     gpu->Release();
     adlx.Terminate();
@@ -196,22 +174,20 @@ static int CmdDetect()
 {
     ADLXHelper adlx;
     CHECK(adlx.Initialize());
-    IADLXSystem* sys = adlx.GetSystem();
+    IADLXSystem* sys = adlx.GetSystemServices();
 
     IADLXGPU* gpu = nullptr;
     {
         IADLXGPUList* gpus = nullptr;
         sys->GetGPUs(&gpus);
-        for (adlx_uint i = 0, n = gpus->Size(); i < n; ++i)
+        if (gpus->Size() > 0)
         {
-            IADLXGPU* g = nullptr;
-            gpus->At(i, &g);
-            if (g && IsAMD(g)) { gpu = g; gpu->AddRef(); g->Release(); break; }
-            if (g) g->Release();
+            gpus->At(0, &gpu);
+            if (gpu) gpu->Acquire();
         }
         gpus->Release();
     }
-    if (!gpu) { std::fputs("FAIL: no AMD GPU found\n", stderr); return 1; }
+    if (!gpu) { std::fputs("FAIL: no GPU found\n", stderr); return 1; }
 
     IADLXGPUTuningServices* tuning = nullptr;
     CHECK(sys->GetGPUTuningServices(&tuning));
@@ -236,10 +212,6 @@ static int CmdDetect()
     mt2->GetVRAMMinFrequency(&vramMin);
     mt2->GetVRAMMaxFrequency(&vramMax);
     mt2->GetVRAMFrequency(&vramCur);
-
-    // re-read current values after the range queries (in case they got clobbered)
-    mt2->GetGPUMinFrequency(&curMin);
-    mt2->GetGPUMaxFrequency(&curMax);
 
     std::printf("{\"hwMin\":%d,\"hwMax\":%d,\"curMin\":%d,\"curMax\":%d,\"vramCur\":%d,\"vramMin\":%d,\"vramMax\":%d}\n",
         (int)hwMin, (int)hwMax, (int)curMin, (int)curMax, (int)vramCur, (int)vramMin, (int)vramMax);

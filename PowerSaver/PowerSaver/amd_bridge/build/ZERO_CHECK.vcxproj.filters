@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\mecra\gpu-reset-tool\PowerSaver\PowerSaver\amd_bridge\build\CMakeFiles\9aaf22a6af175b3e59f72617b4dad357\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{6EDA4F0A-75F2-3AAE-B616-65969A58990C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
