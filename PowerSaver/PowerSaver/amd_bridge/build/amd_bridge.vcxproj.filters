@@ -7,6 +7,9 @@
     <ClCompile Include="C:\Users\mecra\gpu-reset-tool\PowerSaver\PowerSaver\amd_bridge\ADLX\ADLXHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\mecra\gpu-reset-tool\PowerSaver\PowerSaver\amd_bridge\ADLX\WinAPIs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\mecra\gpu-reset-tool\PowerSaver\PowerSaver\amd_bridge\CMakeLists.txt" />
