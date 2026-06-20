@@ -1,9 +1,7 @@
 # Unclock
 
 GPU and CPU power management for Windows - switch between performance and
-power-saving profiles with one click. Lives in the system tray, stays out of the
-way.
-
+power-saving profiles.
 <img width="471" height="729" alt="image" src="https://github.com/user-attachments/assets/6ccced46-0a3a-40a7-ade0-13d9f4130f2f" />
 
 
