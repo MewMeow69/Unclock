@@ -1,7 +1,5 @@
 # Unclock
-
-GPU and CPU power management for Windows - switch between performance and
-power-saving profiles.
+A user friendly windows app for switching between power saving and performance modes.
 <img width="471" height="729" alt="image" src="https://github.com/user-attachments/assets/6ccced46-0a3a-40a7-ade0-13d9f4130f2f" />
 
 
